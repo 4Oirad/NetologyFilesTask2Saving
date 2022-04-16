@@ -14,6 +14,9 @@ public class Main {
                 saveGame(gp1, "C:\\Games\\savegames\\save1.dat")
         };
         zipFiles("C:\\Games\\savegames\\save.zip", saveFiles);
+        for (File file: saveFiles) {
+            file.delete();
+        }
     }
 
     static File saveGame(GameProgress gp, String fileDir) {
@@ -26,7 +29,6 @@ public class Main {
     }
 
     static void zipFiles(String zipFileDir, File[] files) {
-
             try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFileDir))) {
                 for (File file : files) {
                     FileInputStream fis = new FileInputStream(file.getAbsolutePath());
@@ -36,6 +38,7 @@ public class Main {
                     fis.read(buffer);
                     zos.write(buffer);
                     zos.closeEntry();
+                    fis.close();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
