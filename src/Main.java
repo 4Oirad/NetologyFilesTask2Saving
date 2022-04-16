@@ -1,7 +1,4 @@
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -12,32 +9,32 @@ public class Main {
         GameProgress gp2 = new GameProgress(32, 120, 15, 374.7);
         GameProgress gp3 = new GameProgress(87, 8, 10, 100.8);
         saveGame(gp1, "C:\\Games\\savegames\\save1.dat");
+        saveGame(gp2, "C:\\Games\\savegames\\save2.dat");
+        saveGame(gp3, "C:\\Games\\savegames\\save3.dat");
+        zipFiles("C:\\Games\\savegames\\save1.zip", "C:\\Games\\savegames\\save1.dat");
+
+
     }
 
     static void saveGame(GameProgress gp, String fileDir) {
-        try (FileOutputStream fos = new FileOutputStream(fileDir);
-             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileDir))) {
             oos.writeObject(gp);
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    static void zipFiles(String zipFileDir, String[] filesDir) throws FileNotFoundException {
-        try (ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(zipFileDir));
-            FileInputStream fis = new FileInputStream(filesDir[0])) {
-            ZipEntry entry = new ZipEntry("packed_notes.txt");
-            zout.putNextEntry(entry);
-            // считываем содержимое файла в массив
+    static void zipFiles(String zipFileDir, String filesDir) {
+        try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFileDir));
+        FileInputStream fis = new FileInputStream(filesDir)) {
+            ZipEntry zipEntry = new ZipEntry("save1.dat");
+            zos.putNextEntry(zipEntry);
             byte[] buffer = new byte[fis.available()];
             fis.read(buffer);
-            // добавляем содержимое к архиву
-            zout.write(buffer);
-            // закрываем текущую запись для новой записи
-            zout.closeEntry();
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            zos.write(buffer);
+            zos.closeEntry();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
-
 }
